@@ -19,34 +19,8 @@
 		</div>
 		<div class="ui divider"></div>
 		<div id="issue-filters" class="ui stackable grid">
-			<div class="six wide column">
-				<div class="ui tiny basic status buttons">
-					<a class="ui {{if not .IsShowClosed}}green active{{end}} basic button" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state=open&labels={{.SelectLabels}}&milestone={{.MilestoneID}}&assignee={{.AssigneeID}}">
-						<i class="octicon octicon-issue-opened"></i>
-						{{.i18n.Tr "repo.issues.open_tab" .IssueStats.OpenCount}}
-					</a>
-					<a class="ui {{if .IsShowClosed}}red active{{end}} basic button" href="{{$.Link}}?q={{$.Keyword}}&type={{.ViewType}}&sort={{$.SortType}}&state=closed&labels={{.SelectLabels}}&milestone={{.MilestoneID}}&assignee={{.AssigneeID}}">
-						<i class="octicon octicon-issue-closed"></i>
-						{{.i18n.Tr "repo.issues.close_tab" .IssueStats.ClosedCount}}
-					</a>
-				</div>
-			</div>
-			<div class="ten wide right aligned column">
+			<div class="twelve wide right aligned column">
 				<div class="ui secondary filter stackable menu">
-					<!-- Label -->
-					<div class="ui {{if not .Labels}}disabled{{end}} dropdown jump item" style="margin-left: auto">
-						<span class="text">
-							{{.i18n.Tr "repo.issues.filter_label"}}
-							<i class="dropdown icon"></i>
-						</span>
-						<div class="menu">
-							<a class="item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_label_no_select"}}</a>
-							{{range .Labels}}
-								<a class="item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{.ID}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}"><span class="octicon {{if eq $.SelectLabels .ID}}octicon-check{{end}}"></span><span class="label color" style="background-color: {{.Color}}"></span> {{.Name}}</a>
-							{{end}}
-						</div>
-					</div>
-
 					<!-- Milestone -->
 					<div class="ui {{if not .Milestones}}disabled{{end}} dropdown jump item">
 						<span class="text">
@@ -91,166 +65,369 @@
 						</div>
 					{{end}}
 
-					<!-- Sort -->
-					<div class="ui dropdown type jump item">
-						<span class="text">
-							{{.i18n.Tr "repo.issues.filter_sort"}}
-							<i class="dropdown icon"></i>
-						</span>
-						<div class="menu">
-							<a class="{{if or (eq .SortType "latest") (not .SortType)}}active{{end}} item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort=latest&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_sort.latest"}}</a>
-							<a class="{{if eq .SortType "oldest"}}active{{end}} item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort=oldest&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_sort.oldest"}}</a>
-							<a class="{{if eq .SortType "recentupdate"}}active{{end}} item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort=recentupdate&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_sort.recentupdate"}}</a>
-							<a class="{{if eq .SortType "leastupdate"}}active{{end}} item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort=leastupdate&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_sort.leastupdate"}}</a>
-							<a class="{{if eq .SortType "mostcomment"}}active{{end}} item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort=mostcomment&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_sort.mostcomment"}}</a>
-							<a class="{{if eq .SortType "leastcomment"}}active{{end}} item" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort=leastcomment&state={{$.State}}&labels={{.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}">{{.i18n.Tr "repo.issues.filter_sort.leastcomment"}}</a>
-						</div>
-					</div>
 				</div>
 			</div>
-		</div>
-		<div id="issue-actions" class="ui stackable grid">
-			<div class="six wide column">
-				<div class="ui basic status buttons">
-					<div class="ui green active basic button issue-action" data-action="open" data-url="{{$.RepoLink}}/issues/status">{{.i18n.Tr "repo.issues.action_open"}}</div>
-					<div class="ui red active basic button issue-action" data-action="close" data-url="{{$.RepoLink}}/issues/status">{{.i18n.Tr "repo.issues.action_close"}}</div>
-				</div>
-			</div>
-
-			{{/* Ten wide does not cope well and makes the columns stack.
-			This seems to be related to jQuery's hide/show: in fact, switching
-			issue-actions and issue-filters and having this ten wide will show
-			this one correctly, but not the other one. */}}
-			<div class="nine wide right aligned right floated column">
-				<div class="ui secondary filter stackable menu">
-					<!-- Labels -->
-					<div class="ui {{if not .Labels}}disabled{{end}} dropdown jump item" style="margin-left: auto">
-						<span class="text">
-							{{.i18n.Tr "repo.issues.action_label"}}
-							<i class="dropdown icon"></i>
-						</span>
-						<div class="menu">
-							{{range .Labels}}
-								<div class="item issue-action" data-action="toggle" data-element-id="{{.ID}}" data-url="{{$.RepoLink}}/issues/labels">
-									<span class="octicon {{if eq $.SelectLabels .ID}}octicon-check{{end}}"></span><span class="label color" style="background-color: {{.Color}}"></span> {{.Name}}
-								</div>
-							{{end}}
-						</div>
-					</div>
-
-					<!-- Milestone -->
-					<div class="ui {{if not .Milestones}}disabled{{end}} dropdown jump item">
-						<span class="text">
-							{{.i18n.Tr "repo.issues.action_milestone"}}
-							<i class="dropdown icon"></i>
-						</span>
-						<div class="menu">
-							<div class="item issue-action" data-element-id="0" data-url="{{$.Link}}/milestone">
-							{{.i18n.Tr "repo.issues.action_milestone_no_select"}}
-							</div>
-							{{range .Milestones}}
-								<div class="item issue-action" data-element-id="{{.ID}}" data-url="{{$.RepoLink}}/issues/milestone">
-									{{.Name}}
-								</div>
-							{{end}}
-						</div>
-					</div>
-
-					<!-- Assignees -->
-					<div class="ui {{if not .Assignees}}disabled{{end}} dropdown jump item">
-						<span class="text">
-							{{.i18n.Tr "repo.issues.action_assignee"}}
-							<i class="dropdown icon"></i>
-						</span>
-						<div class="menu">
-							<div class="item issue-action" data-element-id="0" data-url="{{$.Link}}/assignee">
-								{{.i18n.Tr "repo.issues.action_assignee_no_select"}}
-							</div>
-							{{range .Assignees}}
-								<div class="item issue-action" data-element-id="{{.ID}}" data-url="{{$.RepoLink}}/issues/assignee">
-									<img src="{{.RelAvatarLink}}"> {{.Name}}
-								</div>
-							{{end}}
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="issue list">
-			{{range .Issues}}
-				{{ $timeStr:= TimeSinceUnix .CreatedUnix $.Lang }}
-				<li class="item">
-					<div class="ui checkbox issue-checkbox">
-						<input type="checkbox" data-issue-id={{.ID}}></input>
-					</div>
-					<div class="ui {{if .IsRead}}black{{else}}green{{end}} label">#{{.Index}}</div>
-					<a class="title has-emoji" href="{{$.Link}}/{{.Index}}">{{.Title}}</a>
-
-					{{if .Ref}}
-						<a class="ui label" href="{{$.RepoLink}}/src/branch/{{.Ref}}">{{.Ref}}</a>
-					{{end}}
-					{{range .Labels}}
-						<a class="ui label" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&state={{$.State}}&labels={{.ID}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}" style="color: {{.ForegroundColor}}; background-color: {{.Color}}" title="{{.Description}}">{{.Name}}</a>
-					{{end}}
-
-					{{if .NumComments}}
-						<span class="comment ui right"><i class="octicon octicon-comment"></i> {{.NumComments}}</span>
-					{{end}}
-
-					{{if .TotalTrackedTime}}
-						<span class="comment ui right"><i class="octicon octicon-clock"></i> {{.TotalTrackedTime | Sec2Time}}</span>
-					{{end}}
-
-					<p class="desc">
-						{{$.i18n.Tr "repo.issues.opened_by" $timeStr .Poster.HomeLink .Poster.Name | Safe}}
-						{{$tasks := .GetTasks}}
-						{{if gt $tasks 0}}
-							{{$tasksDone := .GetTasksDone}}
-							<span class="checklist">
-								<span class="octicon octicon-checklist"></span> {{$tasksDone}} / {{$tasks}} <span class="progress-bar"><span class="progress" style="width:calc(100% * {{$tasksDone}} / {{$tasks}});"></span></span>
-							</span>
-						{{end}}
-						{{if .Milestone}}
-							<a class="milestone" href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{.Milestone.ID}}&assignee={{$.AssigneeID}}">
-								<span class="octicon octicon-milestone"></span> {{.Milestone.Name}}
-							</a>
-						{{end}}
-						{{if ne .DeadlineUnix 0}}
-							<span class="octicon octicon-calendar"></span>
-							<span{{if .IsOverdue}} class="overdue"{{end}}>{{.DeadlineUnix.FormatShort}}</span>
-						{{end}}
-						{{range .Assignees}}
-							<a class="ui right assignee poping up" href="{{.HomeLink}}" data-content="{{.Name}}" data-variation="inverted" data-position="left center">
-								<img class="ui avatar image" src="{{.RelAvatarLink}}">
-							</a>
-						{{end}}
-					</p>
-				</li>
-			{{end}}
-
-			{{with .Page}}
-				{{if gt .TotalPages 1}}
-					<div class="center page buttons">
-						<div class="ui borderless pagination menu">
-							<a class="{{if not .HasPrevious}}disabled{{end}} item" {{if .HasPrevious}}href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}&page={{.Previous}}"{{end}}>
-								<i class="left arrow icon"></i> {{$.i18n.Tr "repo.issues.previous"}}
-							</a>
-							{{range .Pages}}
-								{{if eq .Num -1}}
-									<a class="disabled item">...</a>
-								{{else}}
-									<a class="{{if .IsCurrent}}active{{end}} item" {{if not .IsCurrent}}href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}&page={{.Num}}"{{end}}>{{.Num}}</a>
-								{{end}}
-							{{end}}
-							<a class="{{if not .HasNext}}disabled{{end}} item" {{if .HasNext}}href="{{$.Link}}?q={{$.Keyword}}&type={{$.ViewType}}&sort={{$.SortType}}&state={{$.State}}&labels={{$.SelectLabels}}&milestone={{$.MilestoneID}}&assignee={{$.AssigneeID}}&page={{.Next}}"{{end}}>
-								{{$.i18n.Tr "repo.issues.next"}}&nbsp;<i class="icon right arrow"></i>
-							</a>
-						</div>
-					</div>
-				{{end}}
-			{{end}}
 		</div>
 	</div>
+	<div id="board">
+		<project-board></project-board>
+	</div>
+
+	<script>
+	'use strict';
+	window.addEventListener('load', function() {
+		initBoard();
+	});
+
+	function makeColumns(lots) {
+		var colorBlack = '#000';
+		var colorWhite = '#fff';
+		var colorRed = '#ee0701';
+		var colorOrange = '#f0ad4e';
+		var colorBlue = '#bfd4f2';
+		var colorGreen = '#bfe5bf';
+
+		var bugLabel = {
+			id: 1,
+			title: 'bug',
+			color: colorWhite,
+			background: colorRed,
+		}
+		var featureLabel = {
+			id: 2,
+			title: 'feature',
+			color: colorBlack,
+			background: colorGreen,
+		}
+		var inProgressLabel = {
+			id: 3,
+			title: 'In progress',
+			color: colorBlack,
+			background: colorBlue,
+		}
+		var reviewLabel = {
+			id: 4,
+			title: 'Review',
+			color: colorBlack,
+			background: colorOrange,
+		}
+
+		var v170Milestone = {
+			id: 5,
+			title: 'v1.7.0',
+		}
+		var sprintMilestone = {
+			id: 6,
+			title: 'Sprint #6',
+		}
+
+		var backlogColumn = {
+			label: {
+				title: 'Backlog',
+			},
+			issues: [
+				{
+					id: 113,
+					title: 'User Story A',
+					milestone: v170Milestone,
+					labels: [featureLabel],
+				},
+				{
+					id: 456,
+					title: 'Bug A',
+					milestone: v170Milestone,
+					labels: [bugLabel],
+				},
+			]
+		}
+		var inProgressColumn = {
+			label: inProgressLabel,
+			issues: [
+				{
+					id: 567,
+					title: 'Gitea Board',
+					milestone: sprintMilestone,
+					labels: [featureLabel, inProgressLabel],
+				},
+				{
+					id: 11,
+					title: 'Lots of labels',
+					milestone: sprintMilestone,
+					labels: [
+						bugLabel,
+						featureLabel,
+						bugLabel,
+						featureLabel,
+						bugLabel,
+						featureLabel,
+						inProgressLabel,
+					],
+				},
+				{
+					id: 12,
+					title: 'Very long description with lots of text and details',
+					labels: [],
+				},
+			]
+		}
+		var reviewColumn = {
+			label: reviewLabel,
+			issues: [
+				{
+					id: 42,
+					title: 'Super useful feature X',
+					milestone: sprintMilestone,
+					labels: [featureLabel, reviewLabel],
+				},
+				{
+					id: 43,
+					title: 'Really urgent bug',
+					milestone: sprintMilestone,
+					labels: [bugLabel, reviewLabel],
+				},
+				{
+					id: 31,
+					title: 'Music player feature',
+					labels: [],
+				},
+			]
+		}
+		var closedColumn = {
+			label: {
+				title: 'Closed',
+			},
+			issues: [
+				{
+					id: 55,
+					title: 'Automatic code review',
+					milestone: v170Milestone,
+					labels: [featureLabel],
+				}
+			]
+		}
+
+		if (lots) {
+			return [
+				backlogColumn,
+				inProgressColumn,
+				reviewColumn,
+				reviewColumn,
+				reviewColumn,
+				reviewColumn,
+				closedColumn,
+			]
+		}
+		return [
+			backlogColumn,
+			inProgressColumn,
+			reviewColumn,
+			closedColumn,
+		]
+	}
+
+	function initBoard() {
+		var vueDelimiters = ['[[', ']]'];
+
+		var boardLabelComponent = {
+			delimiters: vueDelimiters,
+			props: ['label'],
+			template: `
+				<a
+					v-if="label.id"
+					class="ui label board-label"
+					:href="'/org/projeto/issues?label=' + label.id"
+					:style="style"
+					:title="label.title"
+				>[[label.title]]</a>
+				<div
+					v-else
+					class="ui label board-label"
+					:style="style"
+				>[[label.title]]</div>
+			`,
+			computed: {
+				style() {
+					var style = {}
+					if (this.label.background) {
+						style['background-color'] = this.label.background
+					}
+					if (this.label.color) {
+						style['color'] = this.label.color
+					}
+					return style
+				}
+			}
+		}
+
+		var boardColumnComponent = {
+			delimiters: vueDelimiters,
+			props: ['label'],
+			components: {
+				'board-label': boardLabelComponent,
+			},
+			template: `
+			<div class="ui segment board-column">
+				<!-- column header -->
+				<board-label :label="label"></board-label>
+				<div class="ui divider"></div>
+				<!-- end header -->
+
+				<div class="ui cards board">
+					<slot></slot>
+				</div>
+			</div>
+			`,
+		}
+
+		var boardCardComponent = {
+			delimiters: vueDelimiters,
+			props: ['id', 'title', 'milestone', 'labels'],
+			components: {
+				'board-label': boardLabelComponent,
+			},
+			template: `
+			<div class="card board-card">
+				<div class="content">
+					<div class="header">[[title]]</div>
+					<div class="meta">
+						<a :href="'/org/project/issues/' + id">#[[id]]</a>
+						<a v-if="milestone" class="milestone" :href="'/org/project/milestones/' + milestone.id">
+							<span class="octicon octicon-milestone"></span>
+							[[milestone.title]]
+						</a>
+					</div>
+				</div>
+				<div v-if="labels.length" class="extra content">
+					<board-label v-for="label in labels" :label="label">
+				</div>
+			</div>
+			`,
+			props: ['id', 'title', 'milestone', 'labels'],
+		}
+
+		var boardComponent = {
+			delimiters: vueDelimiters,
+			props: ['columns'],
+			components: {
+				'board-column': boardColumnComponent,
+				'board-card': boardCardComponent,
+			},
+			template: `
+			<div><!-- remove this later -->
+
+			<div class="board">
+				<board-column
+					v-for="column in columns"
+					:label="column.label"
+				>
+					<board-card
+						v-for="issue in column.issues"
+						:id="issue.id"
+						:title="issue.title"
+						:milestone="issue.milestone"
+						:labels="issue.labels"
+					></board-card>
+				</board-column>
+			</div>
+
+			<!-- remove this later -->
+			<button style="margin: 1em auto; display: block;" @click="change">toggle columns</button>
+			</div>
+			`,
+			data() {
+				return {
+					toggleColumns: false,
+					lessColumns: makeColumns(),
+					moreColumns: makeColumns(true),
+				}
+			},
+			methods: {
+				change() {
+					this.toggleColumns = !this.toggleColumns
+				}
+			},
+			computed: {
+				columns() {
+					if (this.toggleColumns) {
+						return this.moreColumns
+					}
+					return this.lessColumns
+				}
+			}
+		}
+
+		new Vue({
+			el: '#board',
+			delimiters: vueDelimiters,
+			components: {
+				'project-board': boardComponent,
+			},
+		})
+	}
+	</script>
+
+	<style>
+		.board {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			margin: 0 .5em;
+		}
+
+		.board-column {
+			background-color: #eff1f3 !important;
+			border: 1px solid rgba(34,36,38,.15) !important;
+			margin: 0 .5em !important;
+			padding: 5px !important;
+			width: 320px;
+			height: 60vh;
+			overflow-y: scroll;
+			flex: 0 0 auto;
+		}
+
+		.board-column > .cards {
+			margin: 0 !important;
+		}
+
+		.board-column > .board-label {
+			margin-left: 5px !important;
+			margin-top: 3px !important;
+		}
+
+		.board-column > .divider {
+			margin: 5px 0;
+		}
+
+		.board-column:first-child {
+			margin-left: auto !important;
+		}
+
+		.board-column:last-child {
+			margin-right: auto !important;
+		}
+
+		.board-card {
+			margin: 3px !important;
+		}
+
+		.board-card .header {
+			font-size: 1.1em !important;
+		}
+
+		.board-card .content {
+			padding: 5px 8px !important;
+		}
+
+		.board-card .extra.content {
+			padding: 5px 8px !important;
+		}
+
+		.board-label {
+			padding: .4em .6em !important;
+			margin-right: .4em !important;
+			margin-bottom: .4em !important;
+		}
+	</style>
 </div>
 {{template "base/footer" .}}
